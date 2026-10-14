@@ -1,3 +1,32 @@
+# DigUp, the Linux way
+
+This is a Linux port of [DigUp](https://github.com/ARahim3/DigUp) by Abdur Rahim ([@ARahim3](https://github.com/ARahim3)), released under the MIT License. All credit for DigUp's design, search engine and macOS app goes to the original author; the original license is kept in `LICENSE`. This fork is not affiliated with or endorsed by the upstream project.
+
+Search uses Google's [EmbeddingGemma 2](https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/), running locally through [llama.cpp](https://github.com/ggml-org/llama.cpp).
+
+## What the Linux port changes
+
+- `Sources/DigUpKit/FileFetcher.swift`: fixes a crash (SIGABRT) during `digup download-model` on Linux by keeping the download session alive until it has finished.
+- `shell/src-tauri/src/options.rs`: the desktop app finds its bundled helper under `/usr/lib/DigUp/helper` when it is installed from the .deb.
+- `shell/src-tauri/tauri.conf.json`: builds a .deb and an AppImage, ships the helper, and bundles GStreamer's media plugins in the AppImage (without them the search panel froze after the first typed character).
+
+## Build on Linux (tested on Debian 13, x86_64)
+
+Requirements: Swift 6.2, Rust 1.99 or newer with tauri-cli 2, and ffmpeg 8.1 or newer.
+
+```
+swift build -c release && swift test     # set DIGUP_FFMPEG to an ffmpeg 8.1+ bin dir
+.build/release/digup download-model
+.build/release/digup index ~/Documents && .build/release/digup search "your words"
+cd shell && cargo tauri build            # .deb and AppImage under src-tauri/target/release/bundle/
+```
+
+Known Linux limits: the global hotkey (Ctrl+Shift+Space) works on X11 but not on Wayland, the tray icon needs the AppIndicator extension on GNOME, and OCR (Apple Vision on macOS) is not available on Linux.
+
+---
+
+## Original README
+
 <p align="center"><img src="docs/logo.png" width="96" alt=""></p>
 
 <h1 align="center">DigUp</h1>
