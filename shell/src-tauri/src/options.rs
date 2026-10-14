@@ -98,5 +98,16 @@ fn default_helper() -> PathBuf {
         return PathBuf::from(name);
     };
     let inside = folder.join("helper").join(name);
-    if inside.is_file() { inside } else { folder.join(name) }
+    if inside.is_file() {
+        return inside;
+    }
+    // Linux .deb / AppImage: the program is in usr/bin, its bundled resources in usr/lib/DigUp.
+    #[cfg(target_os = "linux")]
+    {
+        let bundled = folder.join("../lib/DigUp/helper").join(name);
+        if bundled.is_file() {
+            return bundled;
+        }
+    }
+    folder.join(name)
 }
